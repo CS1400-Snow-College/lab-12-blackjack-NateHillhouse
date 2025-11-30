@@ -1,0 +1,15 @@
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\bin\Debug\net9.0\lab-12-blackjack-NateHillhouse.exe
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\bin\Debug\net9.0\lab-12-blackjack-NateHillhouse.deps.json
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\bin\Debug\net9.0\lab-12-blackjack-NateHillhouse.runtimeconfig.json
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\bin\Debug\net9.0\lab-12-blackjack-NateHillhouse.dll
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\bin\Debug\net9.0\lab-12-blackjack-NateHillhouse.pdb
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\obj\Debug\net9.0\lab-12-blackjack-NateHillhouse.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\obj\Debug\net9.0\lab-12-blackjack-NateHillhouse.AssemblyInfoInputs.cache
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\obj\Debug\net9.0\lab-12-blackjack-NateHillhouse.AssemblyInfo.cs
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\obj\Debug\net9.0\lab-12-blackjack-NateHillhouse.csproj.CoreCompileInputs.cache
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\obj\Debug\net9.0\lab-12-blackjack-NateHillhouse.sourcelink.json
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\obj\Debug\net9.0\lab-12-blackjack-NateHillhouse.dll
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\obj\Debug\net9.0\refint\lab-12-blackjack-NateHillhouse.dll
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\obj\Debug\net9.0\lab-12-blackjack-NateHillhouse.pdb
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\obj\Debug\net9.0\lab-12-blackjack-NateHillhouse.genruntimeconfig.cache
+C:\Users\nhill_mliw72r\Documents\Code_Projects\my-code-dir\lab-12-blackjack-NateHillhouse\obj\Debug\net9.0\ref\lab-12-blackjack-NateHillhouse.dll
