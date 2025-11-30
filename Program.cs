@@ -8,7 +8,6 @@ You must implement the following menu options for your game play:  (H)it, (S)tan
 The game should adhere to all the rules of blackjack. Please refer to the discussion if you are not familiar with how to play the game.
 The example game play shown is only how I implemented the game. 
 You may take license to create the game in a way pleasing to you.  Just remember it must work, no inventing your own rules. */
-using System.Collections.Immutable;
 
 Main();
 
@@ -19,44 +18,87 @@ void Main()
     string file = "blackjack.txt";
     //List<PlayerInfo> players = ReadFile(file);
     //PlayerInfo player = Intro(players);
+        
+        //Test Info
         PlayerInfo player = new PlayerInfo() {name = "Nate", money = 50};
+    
     Console.WriteLine($"Welcome {player.name}, you have ${player.money} in the bank.");
     //makeBet(player);
-    Hands hands = new Hands(){PlayerHand = new List<(int, string)>(), HouseHand = new List<(int, string)>()};
-    List<(int, string)> deck = CreateDeck(rand);
+    Hands hands = new Hands(){PlayerHand = new List<(int value, string suite, string number)>(), HouseHand = new List<(int value, string suite, string number)>()};
+    List<(int value, string suite, string number)> deck = CreateDeck(rand);
     
     //Deal Starting Deck
     hands = DealCards(deck, rand, hands, 2);
+    
     //WriteEach Card in players hand
     ViewPlayerCards(hands, player);
+    ViewHouseCards(hands, player, "?");
+
+    string action = PlayerAction();
+
 
     //WriteFile(players, player, file);
 }
 
-void ViewPlayerCards(Hands hands, PlayerInfo player)
+
+
+string PlayerAction()
 {
-    Console.Write($"{player.name}'s hand: ");
-    hands.PlayerValue = 0;
-    hands.HouseValue = 0;
-    foreach ((int, string) item in hands.PlayerHand) 
+    Dictionary<string, List<string>> actions = new Dictionary<string, List<string>>() 
     {
-        hands.PlayerValue += item.Item1;
-        Console.Write($"[{item.Item1}{item.Item2}] ");
+        {"Hit", ["Hit", "hit", "H", "h"]},
+        {"Stand", ["Stand", "stand", "S", "s"]},
+        {"Double", ["Double", "double", "D", "d"]}
+    }; 
+    string? key = "";
+    while (!actions["Hit"].Contains(key) && !actions["Stand"].Contains(key) && !actions["Double"].Contains(key))
+    {
+        Console.Write("(H)it, (S)tand, (D)ouble? ");
+        key = Console.ReadLine();  
+    } 
+    if (actions["Hit"].Contains(key)) return "Hit";
+    else if (actions["Stand"].Contains(key)) return "Stand";
+    else return "Double";
+}
+
+void ViewHouseCards(Hands hands, PlayerInfo player, string firstcard)
+{
+    Console.WriteLine($"Dealer Shows: ");
+    hands.HouseValue = 0;
+    Console.SetCursorPosition(15, Console.GetCursorPosition().Top);
+    for (int item = 1; item < hands.HouseHand.Count(); item++) 
+    {
+        hands.HouseValue += hands.HouseHand[item].value;
+        Console.Write($"[{hands.HouseHand[item].number}{hands.HouseHand[item].suite}] ");
     }
-    Console.Write($"Total: {hands.PlayerValue}");
+    Console.WriteLine($"{firstcard} Total: {hands.HouseValue} + {firstcard}");
 
 }
 
-Hands DealCards(List<(int, string)> deck, Random rand, Hands hands, int cards)
+void ViewPlayerCards(Hands hands, PlayerInfo player)
+{
+    Console.WriteLine($"{player.name}'s hand: ");
+    hands.HouseValue = 0;
+    Console.SetCursorPosition(15, Console.GetCursorPosition().Top);
+    foreach ((int value, string suite, string number) item in hands.PlayerHand) 
+    {
+        hands.PlayerValue += item.value;
+        Console.Write($"[{item.number}{item.suite}] ");
+    }
+    Console.WriteLine($"Total: {hands.PlayerValue}");
+
+}
+
+Hands DealCards(List<(int value, string suite, string number)> deck, Random rand, Hands hands, int cards)
 {
     for (int i = cards; i>0; i--) hands.PlayerHand.Add(GetCard(deck, rand, hands));
     for (int i = cards; i>0; i--) hands.HouseHand.Add(GetCard(deck, rand, hands));
     return hands;
 }
 
-(int, string) GetCard(List<(int, string)> deck, Random rand, Hands hands)
+(int value, string suite, string number) GetCard(List<(int value, string suite, string number)> deck, Random rand, Hands hands)
 {
-    (int, string) card = deck[rand.Next(0, deck.Count())];
+    (int value, string suite, string number) card = deck[rand.Next(0, deck.Count())];
     deck.Remove(card);
     return card;
 }
@@ -93,6 +135,7 @@ static PlayerInfo Intro(List<PlayerInfo> players)
     }; 
 
 }
+
 static int InputToInt(string message)
 {
     
@@ -105,7 +148,6 @@ static int InputToInt(string message)
     }
     return input;
 }
-
 
 static List<PlayerInfo> ReadFile(string file)
 {
@@ -148,22 +190,41 @@ static void WriteFile(List<PlayerInfo> players, PlayerInfo player, string path)
     File.WriteAllLines(path, info);
 }
 
-static List<(int, string)> CreateDeck(Random rand)
+static List<(int value, string suite, string number)> CreateDeck(Random rand)
 {
-    List<(int number, string suite)> cards = new List<(int, string)>();
+    List<(int value, string suite, string number)> cards = new List<(int value, string suite, string number)>();
     List<string> suites = new List<string> {"♦","♥","♠","♣"};
     for (int num = 1; num<=13; num++)
     {
         foreach (string item in suites)
         {
-            cards.Add(new (num, item));
+            string card = "";
+            switch (num)
+            {
+                case 1:
+                    card = "A";
+                    break;
+                case 11:
+                    card = "J";
+                    break;
+                case 12:
+                    card = "Q";
+                    break;
+                case 13:
+                    card = "K";
+                    break;
+                default:
+                    card = num.ToString();
+                    break;
+            }
+            cards.Add(new (num, item, card));
         }
     }
-    List<(int, string)> sortedCards = new List<(int, string)>();
+    List<(int value, string suite, string number)> sortedCards = new List<(int value, string suite, string number)>();
 
     for (int i = cards.Count(); i > 0; i--)
     {
-        (int, string) card = cards[rand.Next(0, cards.Count())];
+        (int value, string suite, string number) card = cards[rand.Next(0, cards.Count())];
         cards.Remove(card);
         sortedCards.Add(card);
         
@@ -180,8 +241,8 @@ class PlayerInfo
 
 class Hands
 {
-    public List<(int, string)> PlayerHand {get; set;}
+    public List<(int value, string suite, string number)> PlayerHand {get; set;}
     public int PlayerValue {get; set;}
-    public List<(int, string)> HouseHand {get; set;}
+    public List<(int value, string suite, string number)> HouseHand {get; set;}
     public int HouseValue {get; set;}
 }
