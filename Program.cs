@@ -14,16 +14,52 @@ Main();
 
 void Main()
 {
+    Console.Clear();
+    Random rand = new Random();
     string file = "blackjack.txt";
-    List<PlayerInfo> players = ReadFile(file);
+    //List<PlayerInfo> players = ReadFile(file);
     //PlayerInfo player = Intro(players);
-    //Console.WriteLine($"Welcom {player.name}, you have ${player.money} in the bank.");
+        PlayerInfo player = new PlayerInfo() {name = "Nate", money = 50};
+    Console.WriteLine($"Welcome {player.name}, you have ${player.money} in the bank.");
     //makeBet(player);
+    Hands hands = new Hands(){PlayerHand = new List<(int, string)>(), HouseHand = new List<(int, string)>()};
+    List<(int, string)> deck = CreateDeck(rand);
+    
+    //Deal Starting Deck
+    hands = DealCards(deck, rand, hands, 2);
+    //WriteEach Card in players hand
+    ViewPlayerCards(hands, player);
 
-    CreateDeck();
     //WriteFile(players, player, file);
 }
 
+void ViewPlayerCards(Hands hands, PlayerInfo player)
+{
+    Console.Write($"{player.name}'s hand: ");
+    hands.PlayerValue = 0;
+    hands.HouseValue = 0;
+    foreach ((int, string) item in hands.PlayerHand) 
+    {
+        hands.PlayerValue += item.Item1;
+        Console.Write($"[{item.Item1}{item.Item2}] ");
+    }
+    Console.Write($"Total: {hands.PlayerValue}");
+
+}
+
+Hands DealCards(List<(int, string)> deck, Random rand, Hands hands, int cards)
+{
+    for (int i = cards; i>0; i--) hands.PlayerHand.Add(GetCard(deck, rand, hands));
+    for (int i = cards; i>0; i--) hands.HouseHand.Add(GetCard(deck, rand, hands));
+    return hands;
+}
+
+(int, string) GetCard(List<(int, string)> deck, Random rand, Hands hands)
+{
+    (int, string) card = deck[rand.Next(0, deck.Count())];
+    deck.Remove(card);
+    return card;
+}
 
 void makeBet(PlayerInfo player)
 {
@@ -89,6 +125,7 @@ static List<PlayerInfo> ReadFile(string file)
     }
     return info;
 }
+
 static void WriteFile(List<PlayerInfo> players, PlayerInfo player, string path)
 {
     bool added = false;
@@ -111,7 +148,7 @@ static void WriteFile(List<PlayerInfo> players, PlayerInfo player, string path)
     File.WriteAllLines(path, info);
 }
 
-static List<(int, string)> CreateDeck()
+static List<(int, string)> CreateDeck(Random rand)
 {
     List<(int number, string suite)> cards = new List<(int, string)>();
     List<string> suites = new List<string> {"♦","♥","♠","♣"};
@@ -123,20 +160,28 @@ static List<(int, string)> CreateDeck()
         }
     }
     List<(int, string)> sortedCards = new List<(int, string)>();
-    Random rand = new Random();
 
     for (int i = cards.Count(); i > 0; i--)
     {
         (int, string) card = cards[rand.Next(0, cards.Count())];
         cards.Remove(card);
         sortedCards.Add(card);
+        
     }
-
-    return cards;
+    return sortedCards;
 }
 
 class PlayerInfo
 {
     public string? name {get; set;}
     public int money {get; set;}
+    public List<(int, string)> hand {get; set;}
+}
+
+class Hands
+{
+    public List<(int, string)> PlayerHand {get; set;}
+    public int PlayerValue {get; set;}
+    public List<(int, string)> HouseHand {get; set;}
+    public int HouseValue {get; set;}
 }
