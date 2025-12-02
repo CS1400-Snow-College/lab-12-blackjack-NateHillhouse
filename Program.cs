@@ -29,61 +29,128 @@ void Main()
     
     //Deal Starting Deck
     hands = DealCards(deck, rand, hands, 2);
-    
-    //WriteEach Card in players hand
-    ViewPlayerCards(hands, player);
-    ViewHouseCards(hands, player, "?");
+    GameLoop(hands, player, rand, deck);
 
-    string action = PlayerAction();
+    if ((hands.PlayerValue > hands.HouseValue && hands.PlayerValue <=21 && hands.HouseValue <= 21) || (hands.PlayerValue <=21 && hands.HouseValue >21)) Console.WriteLine("You won!" );
+    else if (hands.HouseValue >21 && hands.PlayerValue > 21) Console.WriteLine("Tie");
+    else Console.WriteLine("You Lost");
 
-
+        
     //WriteFile(players, player, file);
 }
 
 
-
-string PlayerAction()
+void GameLoop(Hands hands, PlayerInfo player, Random rand, List<(int, string, string)> deck, bool continuePlayer = true, bool continueHouse = true)
 {
-    Dictionary<string, List<string>> actions = new Dictionary<string, List<string>>() 
+    int turn = 1;
+    while (continuePlayer || continueHouse)
     {
-        {"Hit", ["Hit", "hit", "H", "h"]},
-        {"Stand", ["Stand", "stand", "S", "s"]},
-        {"Double", ["Double", "double", "D", "d"]}
-    }; 
-    string? key = "";
-    while (!actions["Hit"].Contains(key) && !actions["Stand"].Contains(key) && !actions["Double"].Contains(key))
-    {
-        Console.Write("(H)it, (S)tand, (D)ouble? ");
-        key = Console.ReadLine();  
-    } 
-    if (actions["Hit"].Contains(key)) return "Hit";
-    else if (actions["Stand"].Contains(key)) return "Stand";
-    else return "Double";
-}
+        //WriteEach Card in players hand
+        //Console.WriteLine($"{continuePlayer}, {continueHouse}"); //For debugging
 
-void ViewHouseCards(Hands hands, PlayerInfo player, string firstcard)
+        ViewPlayerCards(hands, player);
+        turn = ViewHouseCards(hands, player, turn);
+
+        Console.WriteLine();
+        Console.WriteLine();
+
+        Console.WriteLine();
+        if (continuePlayer && hands.PlayerValue < 21) {
+            string action = GetPlayerAction();
+            Console.WriteLine();
+            continuePlayer = Action(action, hands, rand, deck);
+        }
+        if (hands.PlayerValue >= 21) continuePlayer = false;
+        if (continueHouse) continueHouse = HouseAction(hands, deck, rand, turn);
+        if (hands.HouseValue >= 17) continueHouse = false;
+        
+    }
+
+    bool HouseAction(Hands hands, List<(int, string, string)> deck, Random rand, int turn)
+    {
+        if (hands.HouseValue <= 16 && turn >2)
+        {
+            hands.HouseHand.Add(GetCard(deck, rand, hands));
+            return true;
+        } 
+        else if (hands.HouseValue > 16) return false;
+        else return true;
+        
+    }
+
+    bool Action(string action, Hands hands, Random rand, List<(int value, string suite, string number)> deck)
+    {
+        switch (action)
+        {
+            case "Hit":
+            (int value, string suite, string number) card = GetCard(deck, rand, hands);
+            hands.PlayerHand.Add(card);
+            Console.WriteLine($"Your draw: [{card.suite}{card.number}]");
+            break;
+
+            case "Stand":
+            return false;
+            
+            case "Double":
+            hands.PlayerHand.Add(GetCard(deck, rand, hands));
+            hands.PlayerHand.Add(GetCard(deck, rand, hands));
+            break;
+        }
+        return true;
+    }
+
+    string GetPlayerAction()
+    {
+        Dictionary<string, List<string>> actions = new Dictionary<string, List<string>>() 
+        {
+            {"Hit", ["Hit", "hit", "H", "h"]},
+            {"Stand", ["Stand", "stand", "S", "s"]},
+            {"Double", ["Double", "double", "D", "d"]}
+        }; 
+        string? key = "";
+        while (!actions["Hit"].Contains(key) && !actions["Stand"].Contains(key) && !actions["Double"].Contains(key))
+        {
+            Console.Write("(H)it, (S)tand, (D)ouble? ");
+            key = Console.ReadLine();  
+        } 
+        if (actions["Hit"].Contains(key)) return "Hit";
+        else if (actions["Stand"].Contains(key)) return "Stand";
+        else return "Double";
+
+    }
+}
+int ViewHouseCards(Hands hands, PlayerInfo player, int turn)
 {
     Console.WriteLine($"Dealer Shows: ");
     hands.HouseValue = 0;
     Console.SetCursorPosition(15, Console.GetCursorPosition().Top);
-    for (int item = 1; item < hands.HouseHand.Count(); item++) 
+    if (turn >= 2)
     {
-        hands.HouseValue += hands.HouseHand[item].value;
-        Console.Write($"[{hands.HouseHand[item].number}{hands.HouseHand[item].suite}] ");
+        for (int item = 0; item < hands.HouseHand.Count(); item++) 
+        {
+            hands.HouseValue += hands.HouseHand[item].value;
+            Console.Write($"[{hands.HouseHand[item].suite}{hands.HouseHand[item].number}] ");
+        }
+        Console.Write($"Total: {hands.HouseValue}");
     }
-    Console.WriteLine($"{firstcard} Total: {hands.HouseValue} + {firstcard}");
+    else if (turn == 1)
+    {
+        Console.Write($"[{hands.HouseHand[0].suite}{hands.HouseHand[0].number}] [?] ");
+    }
 
+    return turn+1;
 }
 
 void ViewPlayerCards(Hands hands, PlayerInfo player)
 {
     Console.WriteLine($"{player.name}'s hand: ");
-    hands.HouseValue = 0;
+    hands.PlayerValue = 0;
     Console.SetCursorPosition(15, Console.GetCursorPosition().Top);
+    
     foreach ((int value, string suite, string number) item in hands.PlayerHand) 
     {
         hands.PlayerValue += item.value;
-        Console.Write($"[{item.number}{item.suite}] ");
+        Console.Write($"[{item.suite}{item.number}] ");
     }
     Console.WriteLine($"Total: {hands.PlayerValue}");
 
@@ -217,7 +284,8 @@ static List<(int value, string suite, string number)> CreateDeck(Random rand)
                     card = num.ToString();
                     break;
             }
-            cards.Add(new (num, item, card));
+            if (num > 10) cards.Add(new (10, item, card));
+            else cards.Add(new (num, item, card));
         }
     }
     List<(int value, string suite, string number)> sortedCards = new List<(int value, string suite, string number)>();
