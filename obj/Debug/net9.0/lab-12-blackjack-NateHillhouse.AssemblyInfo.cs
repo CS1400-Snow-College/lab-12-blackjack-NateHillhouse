@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("lab-12-blackjack-NateHillhouse")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+75468bc22399fa2627d80090f7d6309bf8b9aa04")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+17fc20c97bdbf9789d4d14742150bd70f2a26106")]
 [assembly: System.Reflection.AssemblyProductAttribute("lab-12-blackjack-NateHillhouse")]
 [assembly: System.Reflection.AssemblyTitleAttribute("lab-12-blackjack-NateHillhouse")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -48,7 +48,7 @@ void Main()
     }
     
         
-    //WriteFile(players, player, file);
+    WriteFile(players, player, file);
 }
 
 
