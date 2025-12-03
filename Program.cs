@@ -16,15 +16,15 @@ void Main()
     Console.Clear();
     Random rand = new Random();
     string file = "blackjack.txt";
-    //List<PlayerInfo> players = ReadFile(file);
-    //PlayerInfo player = Intro(players);
+    List<PlayerInfo> players = ReadFile(file);
+    PlayerInfo player = Intro(players);
         
         //Test Info
-        PlayerInfo player = new PlayerInfo() {name = "Nate", money = 50};
-        int bet = 5;
+        //PlayerInfo player = new PlayerInfo() {name = "Nate", money = 50};
+        //int bet = 5;
     
     Console.WriteLine($"Welcome {player.name}, you have ${player.money} in the bank.");
-    //int bet = makeBet(player);
+    int bet = makeBet(player);
     Hands hands = new Hands(){PlayerHand = new List<(int value, string suite, string number)>(), HouseHand = new List<(int value, string suite, string number)>()};
     List<(int value, string suite, string number)> deck = CreateDeck(rand);
     
