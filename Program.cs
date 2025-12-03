@@ -40,7 +40,10 @@ void Main()
         Console.WriteLine(outcome);
         player.money += bet;
     }
-    else if (hands.HouseValue >21 && hands.PlayerValue > 21) outcome = "Tie";
+    else if (hands.HouseValue >21 && hands.PlayerValue > 21) {
+        outcome = "You tied. No money was gained or lost.";
+        Console.WriteLine(outcome);
+    }
     else {
         outcome = $"You lost ${bet}";
         Console.WriteLine(outcome);
@@ -49,6 +52,7 @@ void Main()
     
         
     WriteFile(players, player, file);
+
 }
 
 
