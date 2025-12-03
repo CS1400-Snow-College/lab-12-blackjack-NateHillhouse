@@ -68,13 +68,13 @@ int GameLoop(Hands hands, PlayerInfo player, Random rand, List<(int, string, str
 
         if (continuePlayer && hands.PlayerValue < 21) {
             string action = GetPlayerAction(turn);
+            Console.WriteLine(hands.PlayerValue);
             Console.WriteLine();
             continuePlayer = Action(action, hands, rand, deck, ref bet);
         }
-        if (hands.PlayerValue >= 21) continuePlayer = false;
+        if (hands.PlayerValue >= 21 /*&& /*!hasAce*/) continuePlayer = false; //change value of ace to 1 if over 21
         if (continueHouse) continueHouse = HouseAction(hands, deck, rand, turn);
         if (hands.HouseValue >= 17) continueHouse = false;
-        
         
     }
     
@@ -172,7 +172,7 @@ void ViewPlayerCards(Hands hands, PlayerInfo player)
     {
         hands.PlayerValue += item.value;
     }
-    for (int i = 0; i < hands.PlayerHand.Count; i++){ if (hands.PlayerHand[i].suite == "A" && hands.PlayerValue > 21) hands.PlayerHand[i] = (1, hands.PlayerHand[i].suite, hands.PlayerHand[i].number);
+    for (int i = 0; i < hands.PlayerHand.Count; i++){ if (hands.PlayerHand[i].number == "A" && hands.PlayerValue > 21) hands.PlayerHand[i] = (1, hands.PlayerHand[i].suite, hands.PlayerHand[i].number);
     }
     hands.PlayerValue = 0;
     foreach ((int value, string suite, string number) item in hands.PlayerHand) 
