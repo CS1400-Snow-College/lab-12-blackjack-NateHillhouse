@@ -21,26 +21,38 @@ void Main()
         
         //Test Info
         PlayerInfo player = new PlayerInfo() {name = "Nate", money = 50};
+        int bet = 5;
     
     Console.WriteLine($"Welcome {player.name}, you have ${player.money} in the bank.");
-    //makeBet(player);
+    //int bet = makeBet(player);
     Hands hands = new Hands(){PlayerHand = new List<(int value, string suite, string number)>(), HouseHand = new List<(int value, string suite, string number)>()};
     List<(int value, string suite, string number)> deck = CreateDeck(rand);
     
     //Deal Starting Deck
     hands = DealCards(deck, rand, hands, 2);
-    GameLoop(hands, player, rand, deck);
+    bet = GameLoop(hands, player, rand, deck, bet);
 
-    if ((hands.PlayerValue > hands.HouseValue && hands.PlayerValue <=21 && hands.HouseValue <= 21) || (hands.PlayerValue <=21 && hands.HouseValue >21)) Console.WriteLine("You won!" );
-    else if (hands.HouseValue >21 && hands.PlayerValue > 21) Console.WriteLine("Tie");
-    else Console.WriteLine("You Lost");
-
+    string outcome;
+    if ((hands.PlayerValue > hands.HouseValue && hands.PlayerValue <=21 && hands.HouseValue <= 21) || (hands.PlayerValue <=21 && hands.HouseValue >21)) 
+    {
+        outcome = $"You won ${bet}";
+        
+        Console.WriteLine(outcome);
+        player.money += bet;
+    }
+    else if (hands.HouseValue >21 && hands.PlayerValue > 21) outcome = "Tie";
+    else {
+        outcome = $"You lost ${bet}";
+        Console.WriteLine(outcome);
+        player.money -= bet;
+    }
+    
         
     //WriteFile(players, player, file);
 }
 
 
-void GameLoop(Hands hands, PlayerInfo player, Random rand, List<(int, string, string)> deck, bool continuePlayer = true, bool continueHouse = true)
+int GameLoop(Hands hands, PlayerInfo player, Random rand, List<(int, string, string)> deck, int bet, bool continuePlayer = true, bool continueHouse = true)
 {
     int turn = 1;
     while (continuePlayer || continueHouse)
@@ -54,17 +66,19 @@ void GameLoop(Hands hands, PlayerInfo player, Random rand, List<(int, string, st
         Console.WriteLine();
         Console.WriteLine();
 
-        Console.WriteLine();
         if (continuePlayer && hands.PlayerValue < 21) {
-            string action = GetPlayerAction();
+            string action = GetPlayerAction(turn);
             Console.WriteLine();
-            continuePlayer = Action(action, hands, rand, deck);
+            continuePlayer = Action(action, hands, rand, deck, ref bet);
         }
         if (hands.PlayerValue >= 21) continuePlayer = false;
         if (continueHouse) continueHouse = HouseAction(hands, deck, rand, turn);
         if (hands.HouseValue >= 17) continueHouse = false;
         
+        
     }
+    
+    return bet;
 
     bool HouseAction(Hands hands, List<(int, string, string)> deck, Random rand, int turn)
     {
@@ -78,7 +92,7 @@ void GameLoop(Hands hands, PlayerInfo player, Random rand, List<(int, string, st
         
     }
 
-    bool Action(string action, Hands hands, Random rand, List<(int value, string suite, string number)> deck)
+    bool Action(string action, Hands hands, Random rand, List<(int value, string suite, string number)> deck, ref int bet)
     {
         switch (action)
         {
@@ -93,13 +107,13 @@ void GameLoop(Hands hands, PlayerInfo player, Random rand, List<(int, string, st
             
             case "Double":
             hands.PlayerHand.Add(GetCard(deck, rand, hands));
-            hands.PlayerHand.Add(GetCard(deck, rand, hands));
-            break;
+            bet *= 2;
+            return false;
         }
         return true;
     }
 
-    string GetPlayerAction()
+    string GetPlayerAction(int turn)
     {
         Dictionary<string, List<string>> actions = new Dictionary<string, List<string>>() 
         {
@@ -108,14 +122,22 @@ void GameLoop(Hands hands, PlayerInfo player, Random rand, List<(int, string, st
             {"Double", ["Double", "double", "D", "d"]}
         }; 
         string? key = "";
+        
         while (!actions["Hit"].Contains(key) && !actions["Stand"].Contains(key) && !actions["Double"].Contains(key))
         {
-            Console.Write("(H)it, (S)tand, (D)ouble? ");
+            Console.Write("(H)it, (S)tand");
+            if (turn == 2) Console.Write(", (D)ouble? ");
+            else Console.Write("? ");
             key = Console.ReadLine();  
         } 
         if (actions["Hit"].Contains(key)) return "Hit";
         else if (actions["Stand"].Contains(key)) return "Stand";
-        else return "Double";
+        else if (turn == 2) 
+        {
+            
+            return "Double";
+        }
+        else return GetPlayerAction(turn);
 
     }
 }
@@ -146,7 +168,13 @@ void ViewPlayerCards(Hands hands, PlayerInfo player)
     Console.WriteLine($"{player.name}'s hand: ");
     hands.PlayerValue = 0;
     Console.SetCursorPosition(15, Console.GetCursorPosition().Top);
-    
+    foreach ((int value, string suite, string number) item in hands.PlayerHand) 
+    {
+        hands.PlayerValue += item.value;
+    }
+    for (int i = 0; i < hands.PlayerHand.Count; i++){ if (hands.PlayerHand[i].suite == "A" && hands.PlayerValue > 21) hands.PlayerHand[i] = (1, hands.PlayerHand[i].suite, hands.PlayerHand[i].number);
+    }
+    hands.PlayerValue = 0;
     foreach ((int value, string suite, string number) item in hands.PlayerHand) 
     {
         hands.PlayerValue += item.value;
@@ -170,7 +198,7 @@ Hands DealCards(List<(int value, string suite, string number)> deck, Random rand
     return card;
 }
 
-void makeBet(PlayerInfo player)
+int makeBet(PlayerInfo player)
 {
     int bet = InputToInt("How much would you like to bet? ");
     while (bet > player.money)
@@ -178,7 +206,7 @@ void makeBet(PlayerInfo player)
         Console.Clear();
         bet = InputToInt($"You do not have enough money to bet this much. Please input a number under ${player.money} ");
     }
-    player.money -= bet;
+    return bet;
 }
 
 static PlayerInfo Intro(List<PlayerInfo> players)
@@ -266,10 +294,13 @@ static List<(int value, string suite, string number)> CreateDeck(Random rand)
         foreach (string item in suites)
         {
             string card = "";
+            int value = num;
             switch (num)
             {
                 case 1:
                     card = "A";
+                    num = 1;
+                    value = 11;
                     break;
                 case 11:
                     card = "J";
@@ -285,7 +316,7 @@ static List<(int value, string suite, string number)> CreateDeck(Random rand)
                     break;
             }
             if (num > 10) cards.Add(new (10, item, card));
-            else cards.Add(new (num, item, card));
+            else cards.Add(new (value, item, card));
         }
     }
     List<(int value, string suite, string number)> sortedCards = new List<(int value, string suite, string number)>();
